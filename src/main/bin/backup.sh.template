@@ -1,0 +1,45 @@
+#!/bin/bash
+cd `dirname $0`
+BIN_DIR=`pwd`
+cd ..
+DEPLOY_DIR=`pwd`
+CONF_DIR=$DEPLOY_DIR/conf
+SERVER_NAME='phoenix-defender'
+LOGS_DIR=$DEPLOY_DIR/logs
+LOGS_FILE=$LOGS_DIR/defender.log
+LIB_DIR=$DEPLOY_DIR/lib
+
+ZKURL="node3,node5,node6:2181";
+SCHEMA="ZWL";
+TABLE="T1";
+BACKUP_DIR="/Users/zhangweilai/TEMP/"`date +%Y%m%d`
+
+
+#LIB_JARS=`ls $LIB_DIR|grep .jar|awk '{print "'$LIB_DIR'/"$0}'|tr "\n" ":"`
+
+JAVA_OPTS=" -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true "
+JAVA_DEBUG_OPTS=""
+if [ "$1" = "debug" ]; then
+    JAVA_DEBUG_OPTS=" -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n "
+fi
+JAVA_JMX_OPTS=""
+if [ "$1" = "jmx" ]; then
+    JAVA_JMX_OPTS=" -Dcom.sun.management.jmxremote.port=1099 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false "
+fi
+JAVA_MEM_OPTS=""
+BITS=`file $JAVA_HOME/bin/java | grep 64-bit`
+if [ -n "$BITS" ]; then
+    let memTotal=`cat /proc/meminfo |grep MemTotal|awk '{printf "%d", $2/1024 }'`
+    if [ $memTotal -gt 2500 ];then
+        JAVA_MEM_OPTS=" -server -Xmx512m -Xms512m -Xmn256m -XX:PermSize=128m -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSCompactAtFullCollection -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 "
+    else 
+        JAVA_MEM_OPTS=" -server -Xmx256m -Xms256m -Xmn256m -XX:PermSize=128m -Xss256k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSCompactAtFullCollection -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 "
+    fi
+else
+	JAVA_MEM_OPTS=" -server -Xms256m -Xmx256m -XX:PermSize=128m -XX:SurvivorRatio=2 -XX:+UseParallelGC "
+fi
+
+echo -e "Starting backup ...\c"
+java $JAVA_OPTS $JAVA_MEM_OPTS $JAVA_DEBUG_OPTS $JAVA_JMX_OPTS -classpath .:$CONF_DIR:$LIB_DIR/*  com.zwl.phoenix.defender.PhoenixBasicBackupKit --zkUrl=$ZKURL --schema=$SCHEMA --table=$TABLE --output=$BACKUP_DIR --overwrite
+
+
