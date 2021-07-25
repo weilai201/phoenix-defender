@@ -2,7 +2,7 @@
 
 Phoenix defender is a simple tools to help you backup and restore your data who use apache phoenix in they’s software architecture . It backup data to SQL grammar, such as `UPSERT INTO T(ID,NAME) VALUES(1, 'LUCY');`
 
-# How to use
+# Usage
 
 First, download `Phoenix defender`, or you can compile it youself.
 
@@ -26,6 +26,8 @@ TABLE="T1";
 BACKUP_DIR="/Users/zhangweilai/TEMP/"`date +%Y%m%d`
 
 ````
+
+Or you can compile by youself. Checkout code and run `mvn clean package -DskipTests` .
 
 # TODO
 
