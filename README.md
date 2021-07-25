@@ -6,7 +6,7 @@ Phoenix defender is a simple tools to help you backup and restore your data who 
 
 First, download `Phoenix defender`, or you can compile it youself.
 
-secondly,  open `{phoenix install dir}\bin`, you may find a file which named `backup.sh.template`. Ok, rename it as `backup.sh`.
+secondly,  open `{phoenix install dir}/bin`, you may find a file which named `backup.sh.template` and rename it as `backup.sh`.
 
 Then, update parameters in the `backup.sh` file.
 
