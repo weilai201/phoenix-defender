@@ -43,4 +43,6 @@ BACKUP_DIR="/Users/zhangweilai/TEMP/"`date +%Y%m%d`
 |Restore Index of table | TODO |
 |Restore Sequence | TODO |
 |Restore FUNCTION| TODO |
+|Use Spark to backup and restore data| TODO |
+
 
