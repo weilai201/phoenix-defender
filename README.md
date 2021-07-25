@@ -29,6 +29,8 @@ BACKUP_DIR="/Users/zhangweilai/TEMP/"`date +%Y%m%d`
 
 Or you can compile by youself. Checkout code and run `mvn clean package -DskipTests` .
 
+Finally, run `backup.sh` to backup your data of phoenix.
+
 # TODO
 
 | FUNCTION | STATUS |
