@@ -23,7 +23,6 @@ import com.zwl.phoenix.defender.utils.StringUtil;
  * It use phoenix to backup data.
  * 
  * Include:
- *   Structure of table
  *   Data of table
  *   
  * Not inculde:
@@ -41,7 +40,7 @@ public class PhoenixBasicBackupKit {
 	static Logger logger=LoggerFactory.getLogger(PhoenixBasicBackupKit.class);
 
 	public static void main(String[] args) {
-		logger.info("Start phoenix defender ...");
+		logger.info("Start phoenix defender to backup data of phoenix ...");
 		initParamters(args);
 		initPhonenixClient();
 		

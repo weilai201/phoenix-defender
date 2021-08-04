@@ -10,9 +10,7 @@ LOGS_FILE=$LOGS_DIR/defender.log
 LIB_DIR=$DEPLOY_DIR/lib
 
 ZKURL="node3,node5,node6:2181";
-SCHEMA="S1";
-TABLE="T1";
-BACKUP_DIR="/TEMP/"`date +%Y%m%d`
+RESTORE_FILES="/TEMP/"
 
 
 #LIB_JARS=`ls $LIB_DIR|grep .jar|awk '{print "'$LIB_DIR'/"$0}'|tr "\n" ":"`
@@ -31,6 +29,6 @@ JAVA_MEM_OPTS=" -server -Xmx512m -Xms512m -Xmn256m -XX:PermSize=128m -Xss256k -X
    
 
 echo -e "Starting backup ...\c"
-java $JAVA_OPTS $JAVA_MEM_OPTS $JAVA_DEBUG_OPTS $JAVA_JMX_OPTS -classpath .:$CONF_DIR:$LIB_DIR/*  com.zwl.phoenix.defender.PhoenixBasicBackupKit --zkUrl=$ZKURL --schema=$SCHEMA --table=$TABLE --output=$BACKUP_DIR --overwrite
+java $JAVA_OPTS $JAVA_MEM_OPTS $JAVA_DEBUG_OPTS $JAVA_JMX_OPTS -classpath .:$CONF_DIR:$LIB_DIR/*  com.zwl.phoenix.defender.PhoenixBasicRestoreKit --zkUrl=$ZKURL --files=$RESTORE_FILES
 
 

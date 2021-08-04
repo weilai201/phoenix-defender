@@ -5,7 +5,7 @@ import com.zwl.phoenix.defender.PhoenixBasicBackupKit;
 public class BackupTest {
 
 	public static void test1() {
-		String[] args=new String[] {"--schema=QM_CK_RESULT","--output=/Users/zhangweilai/TEMP","--zkUrl=node3,node5,node6:2181","--overwrite"};
+		String[] args=new String[] {"--schema=ZWL","--output=/Users/zhangweilai/TEMP","--zkUrl=node3,node5,node6:2181","--overwrite"};
 		PhoenixBasicBackupKit.main(args);
 	}
 	

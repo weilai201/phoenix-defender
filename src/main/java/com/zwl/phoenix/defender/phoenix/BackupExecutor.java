@@ -57,7 +57,7 @@ public class BackupExecutor {
 		PreparedStatement stats=null;
 		ResultSet rs=null;
 		
-		Long size=1l;
+		Long size=0l;
 		try {
 			conn=client.getConnection();
 			stats=conn.prepareStatement(sql);
@@ -75,6 +75,8 @@ public class BackupExecutor {
 				.append("(")
 				.append(upsertColumns).append(") VALUES(").append(values).append(");\r\n");
 				
+				size++;
+				
 				if(size%BATCH_OUTPUT_SIZE==0) {
 					//write to file
 					logger.info("Processing : {}", size);
@@ -82,7 +84,7 @@ public class BackupExecutor {
 					buffer.delete(0, buffer.length());
 				}
 				
-				size++;
+				
 			}
 			
 			if(buffer.length()>0) {

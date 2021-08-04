@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class PhoenixClient {
     }
 	
 	
-	public static void close(PreparedStatement pstat) {
+	public static void close(Statement pstat) {
 		try {
 			if(pstat!=null)
 				pstat.close();
