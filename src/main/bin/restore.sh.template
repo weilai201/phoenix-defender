@@ -9,9 +9,13 @@ LOGS_DIR=$DEPLOY_DIR/logs
 LOGS_FILE=$LOGS_DIR/defender.log
 LIB_DIR=$DEPLOY_DIR/lib
 
+# WARN: Below are the parameters you must change its before you run this script!
+# PARAMETERS: BEGIN
+
 ZKURL="node3,node5,node6:2181";
 RESTORE_FILES="/TEMP/"
 
+# PARAMETERS: END
 
 #LIB_JARS=`ls $LIB_DIR|grep .jar|awk '{print "'$LIB_DIR'/"$0}'|tr "\n" ":"`
 
