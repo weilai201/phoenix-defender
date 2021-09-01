@@ -3,8 +3,7 @@ package com.zwl.phoenix.defender.phoenix;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.sql.Connection;
-import java.sql.Statement;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -17,24 +16,26 @@ import com.zwl.phoenix.defender.exception.RestoreExecutorException;
  * @author zhangweilai
  *
  */
-public class RestoreExecutor {
-	static Logger logger=LoggerFactory.getLogger(RestoreExecutor.class);
+public class RestoreWithMultiThreadExecutor {
+	static Logger logger=LoggerFactory.getLogger(RestoreWithMultiThreadExecutor.class);
 	private static final Integer BATCH_EXECUTE_SIZE=5000;
 	private static final String CODE_COMMENT_CHAR="#";
+	private static final int DEFAULT_THREAD_SIZE=20;
+	private static final int DEFAULT_QUEUE_SIZE=200000;
+	
+	private static ArrayBlockingQueue<String> queue=new ArrayBlockingQueue<String>(DEFAULT_QUEUE_SIZE);
+	
 	
 	public static Long restore(File file) {
 		BufferedReader br=null;
-		Connection conn=null;
-		Statement stat=null;
 		Long size=0l;
 		try {
 			
-			conn=PhoenixClient.getClient().getConnection();
-			stat=conn.createStatement();
-			conn.setAutoCommit(false);
+			SimpleRestoreExecutorThreadPool pool=new SimpleRestoreExecutorThreadPool(DEFAULT_THREAD_SIZE,queue);
+			pool.start();
 			
 			br=new BufferedReader(new FileReader(file));
-			String sql=br.readLine();
+			String sql=br.readLine();//read is much faster then write
 			while(sql!=null) {
 				if("".equals(sql.trim())) {
 					continue;
@@ -48,32 +49,30 @@ public class RestoreExecutor {
 					sql=sql.substring(0,sql.length()-1);
 				}
 				
+				queue.put(sql);
+				
 				size++;
-				
-				stat.executeUpdate(sql);
-				
+
 				if(size%BATCH_EXECUTE_SIZE==0) {
-					conn.commit();
 					logger.info("Processing : {}", size);
 				}
 				
 				sql=br.readLine();
 			}
 			
-			if(size%BATCH_EXECUTE_SIZE!=0) {
-				logger.info("Processing : {}", size);
-				conn.commit();
-			}
+			//last, stop executors!
+			pool.stop();
 			
 			
 		}catch (Exception e) {
 			logger.error("",e);
 			throw new RestoreExecutorException(e.getMessage());
-		}finally {
+		}finally{
 			IOUtils.closeQuietly(br);
-			PhoenixClient.close(stat);
-			PhoenixClient.close(conn);
 		}
+			
+			
+		
 			
 		return size;
 	}

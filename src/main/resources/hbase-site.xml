@@ -52,6 +52,21 @@
 	<description>设置phoenix批量提交记录条数。在使用upsert select 的时候适用。</description>
 </property>
 
+<property>
+      <name>phoenix.mutate.maxSize</name>
+      <value>1500000</value>
+ </property>
+ 
+  <property>
+    <name>phoenix.mutate.maxSizeBytes</name>
+    <value>1048576000</value>
+</property>
+
+ <property>
+    <name>phoenix.mutate.maxSizeBytes</name>
+    <value>104857601</value>
+</property>
+
  <property>
     <name>phoenix.query.timeoutMs</name>
     <value>1200000</value>
