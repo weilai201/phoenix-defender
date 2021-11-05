@@ -153,7 +153,13 @@ public class BackupExecutor {
 		}
 		
 		if(o instanceof String) {
-			return String.format("%s%s%s", FIELD_SINGLE_QUOTE,o.toString(),FIELD_SINGLE_QUOTE);
+			//处理字符串中的回车、换行、单引号
+			String temp=o.toString();
+			temp=temp.replaceAll("\r", "\\\\r");
+			temp=temp.replaceAll("\n", "\\\\n");
+			temp=temp.replaceAll("'", "''");
+			
+			return String.format("%s%s%s", FIELD_SINGLE_QUOTE,temp,FIELD_SINGLE_QUOTE);
 		}else if(o instanceof Long) {
 			return o.toString();
 		}else if(o instanceof Double){

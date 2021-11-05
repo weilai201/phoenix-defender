@@ -18,7 +18,7 @@ import com.zwl.phoenix.defender.exception.RestoreExecutorException;
  */
 public class RestoreWithMultiThreadExecutor {
 	static Logger logger=LoggerFactory.getLogger(RestoreWithMultiThreadExecutor.class);
-	private static final Integer BATCH_EXECUTE_SIZE=5000;
+	private static final Integer BATCH_EXECUTE_SIZE=2000;
 	private static final String CODE_COMMENT_CHAR="#";
 	private static final int DEFAULT_THREAD_SIZE=20;
 	private static final int DEFAULT_QUEUE_SIZE=200000;

@@ -19,7 +19,7 @@ import com.zwl.phoenix.defender.exception.RestoreExecutorException;
  */
 public class RestoreExecutor {
 	static Logger logger=LoggerFactory.getLogger(RestoreExecutor.class);
-	private static final Integer BATCH_EXECUTE_SIZE=5000;
+	private static final Integer BATCH_EXECUTE_SIZE=2000;
 	private static final String CODE_COMMENT_CHAR="#";
 	
 	public static Long restore(File file) {
