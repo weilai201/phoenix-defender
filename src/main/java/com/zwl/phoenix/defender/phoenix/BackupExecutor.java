@@ -66,14 +66,26 @@ public class BackupExecutor {
 			String upsertColumns=buildColumns(table);
 			
 			StringBuffer buffer=new StringBuffer();
+			
+			/**
+			 * All record has the same schema, so we can only save the schema once here.
+			 */
+			StringBuffer schemaBuffer=new StringBuffer();
+			schemaBuffer.append("UPSERT INTO ")
+			.append(FIELD_QUOTE).append(table.getSchemaName()).append(FIELD_QUOTE)
+			.append(".")
+			.append(FIELD_QUOTE).append(table.getTableName()).append(FIELD_QUOTE)
+			.append("(")
+			.append(upsertColumns)
+			.append(")")
+			.append("\r\n");
+			
+			logger.info("Write Schema information into file! Shcema : {}", schemaBuffer.toString());
+			FileUtils.write(file, schemaBuffer.toString(), CHARSET, true);
+			
 			while(rs.next()) {
 				String values=buildValues(table, rs);
-				buffer.append("UPSERT INTO ")
-				.append(FIELD_QUOTE).append(table.getSchemaName()).append(FIELD_QUOTE)
-				.append(".")
-				.append(FIELD_QUOTE).append(table.getTableName()).append(FIELD_QUOTE)
-				.append("(")
-				.append(upsertColumns).append(") VALUES(").append(values).append(");\r\n");
+				buffer.append(values).append("\r\n");
 				
 				size++;
 				

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.zwl.phoenix</groupId>
   <artifactId>phoenix-defender</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   
   <properties>
     <logback.version>1.2.0</logback.version>

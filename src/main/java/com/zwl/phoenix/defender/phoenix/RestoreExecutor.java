@@ -34,7 +34,11 @@ public class RestoreExecutor {
 			conn.setAutoCommit(false);
 			
 			br=new BufferedReader(new FileReader(file));
+			String schema=br.readLine();
+			
+			//The first line is schema info, like 'UPSERT INTO SECHME.TABLE ';
 			String sql=br.readLine();
+			
 			while(sql!=null) {
 				if("".equals(sql.trim())) {
 					continue;
@@ -44,9 +48,10 @@ public class RestoreExecutor {
 					continue;
 				}
 				
-				if(sql.endsWith(";")) {
-					sql=sql.substring(0,sql.length()-1);
-				}
+				/**
+				 * 
+				 */
+				sql = String.format("%s VALUES(%s)", schema, sql);
 				
 				size++;
 				
