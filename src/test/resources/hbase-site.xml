@@ -48,13 +48,13 @@
 </property>
 <property>
 	<name>phoenix.mutate.batchSize</name>
-	<value>10000</value>
+	<value>5000</value>
 	<description>设置phoenix批量提交记录条数。在使用upsert select 的时候适用。</description>
 </property>
 
 <property>
       <name>phoenix.mutate.maxSize</name>
-      <value>2500000</value>
+      <value>250000</value>
  </property>
  
  <property>

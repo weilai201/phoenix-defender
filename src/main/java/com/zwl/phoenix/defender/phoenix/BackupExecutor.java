@@ -1,6 +1,8 @@
 package com.zwl.phoenix.defender.phoenix;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Connection;
@@ -13,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +32,7 @@ import com.zwl.phoenix.defender.phoenix.entity.Table;
 public class BackupExecutor {
 	
 	static Logger logger=LoggerFactory.getLogger(BackupExecutor.class);
-	private static final Integer BATCH_OUTPUT_SIZE=10000;// write to file every 10000 record
+	private static final Integer BATCH_OUTPUT_SIZE=1000;// write to file every 10000 record
 	private static final String FIELD_QUOTE="\"";
 	private static final String FIELD_SINGLE_QUOTE="'";
 	private static final String CHARSET="utf8";
@@ -42,6 +45,12 @@ public class BackupExecutor {
 				logger.debug(String.format("The backup file [%s] is exists, then override it!",file.getAbsolutePath()));
 				
 				file.delete();
+			}
+			
+			try {
+				FileUtils.forceMkdir(new File(backupDir));
+			} catch (IOException e) {
+				throw new BackupExecutorException(String.format("Create backup dir [%s] fail!",backupDir));
 			}
 		}else {
 			if(file.exists()) {
@@ -58,6 +67,10 @@ public class BackupExecutor {
 		ResultSet rs=null;
 		
 		Long size=0l;
+		
+		
+		OutputStream out = null;
+        
 		try {
 			conn=client.getConnection();
 			stats=conn.prepareStatement(sql);
@@ -67,6 +80,7 @@ public class BackupExecutor {
 			
 			StringBuffer buffer=new StringBuffer();
 			
+			out = FileUtils.openOutputStream(file, false);
 			/**
 			 * All record has the same schema, so we can only save the schema once here.
 			 */
@@ -81,7 +95,8 @@ public class BackupExecutor {
 			.append("\r\n");
 			
 			logger.info("Write Schema information into file! Shcema : {}", schemaBuffer.toString());
-			FileUtils.write(file, schemaBuffer.toString(), CHARSET, true);
+			//FileUtils.write(file, schemaBuffer.toString(), CHARSET, true);
+			 IOUtils.write(schemaBuffer.toString(), out, CHARSET);
 			
 			while(rs.next()) {
 				String values=buildValues(table, rs);
@@ -92,7 +107,8 @@ public class BackupExecutor {
 				if(size%BATCH_OUTPUT_SIZE==0) {
 					//write to file
 					logger.info("Processing : {}", size);
-					FileUtils.write(file, buffer.toString(), CHARSET, true);
+					IOUtils.write(buffer.toString(), out, CHARSET);
+					
 					buffer.delete(0, buffer.length());
 				}
 				
@@ -101,7 +117,7 @@ public class BackupExecutor {
 			
 			if(buffer.length()>0) {
 				logger.info("Processing : {}", size);
-				FileUtils.write(file, buffer.toString(), CHARSET, true);
+				IOUtils.write(buffer.toString(), out, CHARSET);
 				buffer.delete(0, buffer.length());
 			}
 			
@@ -109,6 +125,8 @@ public class BackupExecutor {
 			logger.error("",e);
 			throw new BackupExecutorException(e);
 		}finally {
+			IOUtils.closeQuietly(out);
+			
 			PhoenixClient.close(rs);
 			PhoenixClient.close(stats);
 			PhoenixClient.close(conn);
