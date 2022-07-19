@@ -32,7 +32,7 @@ import com.zwl.phoenix.defender.phoenix.entity.Table;
 public class BackupExecutor {
 	
 	static Logger logger=LoggerFactory.getLogger(BackupExecutor.class);
-	private static final Integer BATCH_OUTPUT_SIZE=1000;// write to file every 10000 record
+	private static final Integer BATCH_OUTPUT_SIZE=10000;// write to file every 10000 record
 	private static final String FIELD_QUOTE="\"";
 	private static final String FIELD_SINGLE_QUOTE="'";
 	private static final String CHARSET="utf8";
