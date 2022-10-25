@@ -10,7 +10,9 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.zwl.phoenix.defender.PhoenixBasicRestoreConfig;
 import com.zwl.phoenix.defender.exception.RestoreExecutorException;
+import com.zwl.phoenix.defender.utils.StringUtil;
 
 /**
  * restore executor
@@ -36,6 +38,7 @@ public class RestoreExecutor {
 			br=new BufferedReader(new FileReader(file));
 			String schema=br.readLine();
 			
+			schema = getRealSchemaInfo(schema);
 			//The first line is schema info, like 'UPSERT INTO SECHME.TABLE ';
 			String sql=br.readLine();
 			
@@ -81,6 +84,20 @@ public class RestoreExecutor {
 		}
 			
 		return size;
+	}
+	
+	private static String getRealSchemaInfo(String oriSchema) {
+		if(StringUtil.isEmpty(PhoenixBasicRestoreConfig.targetTableName)) {
+			return oriSchema;
+		}
+		
+		String flag = "UPSERT INTO ";
+		int first = oriSchema.indexOf(flag);
+		int last = oriSchema.indexOf("(",first+flag.length()+1);
+		
+		String tailString = oriSchema.substring(last);
+		
+		return String.format("%s%s%s", flag, PhoenixBasicRestoreConfig.targetTableName, tailString);
 	}
 	
 }

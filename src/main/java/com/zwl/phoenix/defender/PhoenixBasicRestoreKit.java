@@ -55,6 +55,7 @@ public class PhoenixBasicRestoreKit {
         Options options = new Options();
         options.addOption("", "zkUrl", true, "The url of zookeeper which is used to connect to phoenix" );
         options.addOption("f", "files", true, "The file or directory where the backup's files you want to restore.If it is a file, then restore data of a table. Otherwise restore all data in this directory" );
+        options.addOption("T","target",true,"Write data into target table if you specify this option. The format is shemaName.tableName. Note: this option is only use for restore one table once! ");
         options.addOption("h", "help", false, "Help" );
         
         CommandLine commandLine;
@@ -78,6 +79,10 @@ public class PhoenixBasicRestoreKit {
 	        }else {
 	        	logger.error("Please input parameter : --files");
 	        	System.exit(1);
+	        }
+			
+			if (commandLine.hasOption("T")){
+				PhoenixBasicRestoreConfig.targetTableName=commandLine.getOptionValue("T");
 	        }
 			
 		} catch (ParseException e) {

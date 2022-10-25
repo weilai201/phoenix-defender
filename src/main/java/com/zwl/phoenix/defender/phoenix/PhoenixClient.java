@@ -175,15 +175,17 @@ public class PhoenixClient {
 			
 			boolean isfirst=rs.next();
 			
-			if(!isfirst) {
-				throw new PhoenixClientException(String.format("Can not found table [%s:%s]",schemaName, tableName));
-			}
-			
 			TableBaseInfo baseInfo=new TableBaseInfo();
-			baseInfo.setPrimaryKeyName(rs.getString("PK_NAME"));
-			baseInfo.setSaltBuckets(getIntegerFromResultset(rs,"SALT_BUCKETS"));
 			baseInfo.setSchemaName(schemaName);
 			baseInfo.setTableName(tableName);
+			
+			if(!isfirst) {
+				return baseInfo;
+				//throw new PhoenixClientException(String.format("Can not found table [%s:%s]",schemaName, tableName));
+			}
+			
+			baseInfo.setPrimaryKeyName(rs.getString("PK_NAME"));
+			baseInfo.setSaltBuckets(getIntegerFromResultset(rs,"SALT_BUCKETS"));
 			baseInfo.setUpdateCacheFrequency(getLongFromResultset(rs, "UPDATE_CACHE_FREQUENCY"));
 			
 			return baseInfo;
