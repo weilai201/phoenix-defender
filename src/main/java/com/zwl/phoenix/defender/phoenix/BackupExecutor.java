@@ -188,6 +188,7 @@ public class BackupExecutor {
 			temp=temp.replaceAll("\r", "\\\\r");
 			temp=temp.replaceAll("\n", "\\\\n");
 			temp=temp.replaceAll("'", "''");
+			temp=temp.replaceAll("\\\\", "\\\\\\\\");
 			
 			return String.format("%s%s%s", FIELD_SINGLE_QUOTE,temp,FIELD_SINGLE_QUOTE);
 		}else if(o instanceof Long) {
@@ -223,5 +224,6 @@ public class BackupExecutor {
 		
 		return null;
 	}
+	
 	
 }

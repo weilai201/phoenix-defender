@@ -39,7 +39,7 @@ public class SimpleRestoreExecutorThreadPool {
 		for(Entry<String, PhoenixRestoreExecutorThread> entry:executors.entrySet()) {
 			PhoenixRestoreExecutorThread executor=entry.getValue();
 			executor.start();
-			logger.info("%s started!");
+			logger.info(String.format("%s started!", entry.getKey()));
 			
 		}
 	}

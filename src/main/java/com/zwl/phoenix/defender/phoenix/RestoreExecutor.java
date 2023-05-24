@@ -86,7 +86,7 @@ public class RestoreExecutor {
 		return size;
 	}
 	
-	private static String getRealSchemaInfo(String oriSchema) {
+	protected static String getRealSchemaInfo(String oriSchema) {
 		if(StringUtil.isEmpty(PhoenixBasicRestoreConfig.targetTableName)) {
 			return oriSchema;
 		}

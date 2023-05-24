@@ -16,7 +16,7 @@ import com.zwl.phoenix.defender.exception.RestoreExecutorException;
  * @author zhangweilai
  *
  */
-public class RestoreWithMultiThreadExecutor {
+public class RestoreWithMultiThreadExecutor extends RestoreExecutor{
 	static Logger logger=LoggerFactory.getLogger(RestoreWithMultiThreadExecutor.class);
 	private static final Integer BATCH_EXECUTE_SIZE=2000;
 	private static final String CODE_COMMENT_CHAR="#";
@@ -35,7 +35,12 @@ public class RestoreWithMultiThreadExecutor {
 			pool.start();
 			
 			br=new BufferedReader(new FileReader(file));
+			
+			String schema=br.readLine();
+			schema = getRealSchemaInfo(schema);
+			
 			String sql=br.readLine();//read is much faster then write
+			
 			while(sql!=null) {
 				if("".equals(sql.trim())) {
 					continue;
@@ -45,9 +50,8 @@ public class RestoreWithMultiThreadExecutor {
 					continue;
 				}
 				
-				if(sql.endsWith(";")) {
-					sql=sql.substring(0,sql.length()-1);
-				}
+				
+				sql = String.format("%s VALUES(%s)", schema, sql);
 				
 				queue.put(sql);
 				
