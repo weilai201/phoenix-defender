@@ -54,7 +54,7 @@ public class PhoenixBasicBackupKit {
         Options options = new Options();
         options.addOption("", "zkUrl", true, "The url of zookeeper which is used to connect to phoenix" );
         options.addOption("s", "schema", true, "The Schema you want to backup");
-        options.addOption("t", "table", true, "The Table you want to backup" );
+        options.addOption("t", "tables", true, "The Tables you want to backup. Multiple tables are separated by commas." );
         options.addOption("o", "output", true, "The path for store backup's files" );
         options.addOption("O", "overwrite", false, "If the backup files is exists, overwrite it" );
         options.addOption("h", "help", false, "Help" );
@@ -83,7 +83,7 @@ public class PhoenixBasicBackupKit {
 	        }
 			
 			if (commandLine.hasOption("t")){
-				PhoenixBasicBackupConfig.table=commandLine.getOptionValue("t");
+				PhoenixBasicBackupConfig.tables=commandLine.getOptionValue("t");
 	        }
 			
 			if (commandLine.hasOption("o")){
@@ -111,7 +111,7 @@ public class PhoenixBasicBackupKit {
 	
 	private static void usage(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp( "java com.zwl.phoenix.defender.PhoenixBasicBackupKit --zkUrl=localhost:2181 --schema=S1 [--table=T1] --output=/data/backup/ --overwrite", options );
+		formatter.printHelp( "java com.zwl.phoenix.defender.PhoenixBasicBackupKit --zkUrl=localhost:2181 --schema=S1 [--tables=T1,T2] --output=/data/backup/ --overwrite", options );
 	}
 	
 	private static void initPhonenixClient() {
@@ -123,7 +123,7 @@ public class PhoenixBasicBackupKit {
 	private static void backup() {
 		String schemaName=PhoenixBasicBackupConfig.schema;
 		String outputDir=PhoenixBasicBackupConfig.backupDir;
-		String tableName=PhoenixBasicBackupConfig.table;
+		String tableNames=PhoenixBasicBackupConfig.tables;
 		
 		String backupDir=null;
 		if(outputDir.endsWith(File.separator)) {
@@ -138,10 +138,10 @@ public class PhoenixBasicBackupKit {
 		}
 		
 		//backup schema
-		if(StringUtil.isEmpty(PhoenixBasicBackupConfig.table)) {
+		if(StringUtil.isEmpty(PhoenixBasicBackupConfig.tables)) {
 			backupAllTablesOfSchema(schemaName, backupDir);
 		}else {// backup a table
-			badckupTable(schemaName,tableName,backupDir);
+			badckupTables(schemaName,tableNames,backupDir);
 		}
 		
 	}
@@ -170,16 +170,22 @@ public class PhoenixBasicBackupKit {
 		logger.info(String.format("Sucessfully backup shchema [%s] data! Data size: %s, Cost: %sms",schemaName,size, (endTime-beginTime)));
 	}
 	
-	private static void badckupTable(String schemaName, String tableName, String backupDir) {
+	private static void badckupTables(String schemaName, String tableNames, String backupDir) {
 		
 		PhoenixClient client=PhoenixClient.getClient();
-		Table table=client.getTable(schemaName, tableName);
-		if(table==null) {
-			logger.error("The table [{}] is not exists!",tableName);
-			System.exit(0);
-		}
 		
-		backupTable(table,backupDir);
+		String[] arrTables = tableNames.split(",");
+		
+		for(String talbeName:arrTables) {
+			Table table=client.getTable(schemaName, talbeName);
+			if(table==null) {
+				logger.error("The table [{}] is not exists!",talbeName);
+				//System.exit(0);
+				continue;
+			}
+			
+			backupTable(table,backupDir);
+		}
 	}
 	
 	private static long backupTable(Table table, String backupDir) {
